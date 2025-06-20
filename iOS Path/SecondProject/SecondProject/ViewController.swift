@@ -10,6 +10,12 @@ import UIKit
 class ViewController: UIViewController {
 
     @IBOutlet var lightTitle: UIButton!
+    @IBOutlet var slider: UISlider!
+    @IBOutlet var toggle: UISwitch!
+    
+    
+
+
     var lightOn = true;
     
     override func viewDidLoad() {
@@ -17,6 +23,13 @@ class ViewController: UIViewController {
         // Do any additional setup after loading the view.
     }
     @IBAction func buttonTapped(_ sender: UIButton){
+        if toggle.isOn{
+            print("Switch is on")
+        }
+        else
+        {
+            print("Switch is off")
+        }
         lightOn.toggle()  // True ise False yapar, False ise True yapar
         updateUI()
         }
@@ -30,6 +43,29 @@ class ViewController: UIViewController {
             lightTitle.setTitle("ON", for: .normal)
 
 
+        }
+    }
+    @IBAction func switchToggled(_ sender: UISwitch){
+        
+        if sender.isOn{
+            print("Switch is on")
+        }
+        else{
+            print("Switch is off")
+        }
+    }
+    @IBAction func sliderValueChanged(_ slider: UISlider ){
+        print(slider.value)
+    }
+    @IBAction func keyboardReturnKeyTapped(_ textfield: UITextField){
+        if let text=textfield.text{
+            print(text)
+        }
+        
+    }
+    @IBAction func textChanged(_ textField: UITextField){
+        if let text = textField.text{
+            print(text)
         }
     }
 }
