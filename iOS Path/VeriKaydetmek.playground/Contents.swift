@@ -115,7 +115,7 @@ if let encodedData = try? propertyListEncoder.encode(notes){
 
 if let notesData = try? Data(contentsOf: notesURL)
 {
-    if let decodedNotes = try? propertyListDecoder.decode([Note].self, from: notesData){
+    if let decodedNotes = try?  propertyListDecoder.decode([Note].self, from: notesData){
         print(decodedNotes)
     }
 }
