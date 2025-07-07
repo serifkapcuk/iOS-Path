@@ -6,31 +6,58 @@
 //
 
 import UIKit
+import CoreLocation
 
-class ViewController: UIViewController {
+
+class ViewController: UIViewController, CLLocationManagerDelegate{
     
-    @IBOutlet  var tempResultLabel:UILabel!
-    @IBOutlet  var windSpeedLabel:UILabel!
-    @IBOutlet  var directionOfWind:UILabel!
-    @IBOutlet  var searchButton:UISearchBar!
-    @IBOutlet  var showButton:UIButton!
-
+    
+    @IBOutlet  var tempResultLabel: UILabel!
+    @IBOutlet  var windSpeedLabel: UILabel!
+    @IBOutlet  var directionOfWind: UILabel!
+    @IBOutlet  var searchButton: UISearchBar!
+    @IBOutlet  var showButton: UIButton!
+    @IBOutlet var locationButton:UIButton!
+    
+    let locationManager = CLLocationManager()
+    
+    
     let apiKey = "3fb8728561abe479a2754c2caeb1cc2b"
-
-    override func viewDidLoad(){
+    
+    override func viewDidLoad() {
         super.viewDidLoad()
         updateBackGround()
         searchButton.placeholder = "Bir şehir gir!"
         searchButton.barTintColor = .clear
         searchButton.backgroundImage = UIImage()
+        locationManager.delegate = self
+        locationManager.delegate = self
+        
+    }
+    @IBAction func requestLocationTapped(_ sender: UIButton) {
+        locationManager.requestWhenInUseAuthorization()
+        locationManager.requestLocation()
+        
+    }
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        if let status = locations.first {
+            let lat = status.coordinate.latitude
+            let lon = status.coordinate.longitude
+            print("Latitude is: \(lat), Langitude is: \(lon)")
+            
+        } else{return}
+    }
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        print("Konum alınamadı: \(error.localizedDescription)")
     }
     
-    func updateBackGround(){
+    
+    func updateBackGround() {
         
         let now = Date()
         let calendar = Calendar.current
         var components = calendar.dateComponents([.year, .month, .day], from: now)
-        components.hour = 13
+        components.hour = 14
         components.minute = 00
         if let comparison = calendar.date(from: components){
             if now < comparison{
@@ -40,7 +67,9 @@ class ViewController: UIViewController {
                 backgroundImage.contentMode = .scaleAspectFill
                 backgroundImage.clipsToBounds = true
                 self.view.insertSubview(backgroundImage, at: 0)
-                showButton.backgroundColor = .lightGray
+                showButton.backgroundColor = .blue
+                showButton.tintColor = .white
+                showButton.layer.cornerRadius = 8
             } else {
                 overrideUserInterfaceStyle = .dark
                 let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
@@ -48,11 +77,13 @@ class ViewController: UIViewController {
                 backgroundImage.contentMode = .scaleAspectFill
                 backgroundImage.clipsToBounds = true
                 self.view.insertSubview(backgroundImage, at: 0)
+                showButton.tintColor = .white
+                
             }
         }
     }
     
-    @IBAction  func showButtonTapped(_ sender:UIButton){
+    @IBAction  func showButtonTapped(_ sender:UIButton) {
         
         guard let city = searchButton?.text, !city.isEmpty else{ return }
         let urlString = "https://api.openweathermap.org/data/2.5/weather?q=\(city)&appid=\(apiKey)&units=metric"
@@ -71,10 +102,10 @@ class ViewController: UIViewController {
                 return
             }
             do {
-                let decodedData = try JSONDecoder().decode(WeatherResponse.self, from: data)
-                let temp = decodedData.main.temp
-                let wind = decodedData.wind.speed
-                let direction = decodedData.wind.deg
+                let decodedData = try? JSONDecoder().decode(WeatherResponse.self, from :data)
+                guard let temp = decodedData?.main?.temp,
+                      let wind = decodedData?.wind?.speed,
+                      let direction = decodedData?.wind?.deg else { return }
                 
                 DispatchQueue.main.async {
                     self.tempResultLabel.text = "\(temp) °C"

@@ -8,5 +8,5 @@
 
 
 struct Main: Codable {
-    let temp: Double
+    let temp: Double?
 }

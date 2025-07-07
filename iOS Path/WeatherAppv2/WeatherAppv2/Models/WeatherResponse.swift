@@ -6,7 +6,7 @@
 //
 
 struct WeatherResponse: Codable {
-      let main: Main
+      let main: Main?
       let weather: [Weather]
-      let wind: Wind
+      let wind: Wind?
   }
